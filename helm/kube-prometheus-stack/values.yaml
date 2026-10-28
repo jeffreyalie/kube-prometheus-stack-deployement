@@ -51,12 +51,12 @@ prometheus:
     # Resource limits — tune to your MicroK8s node capacity
     resources:
       requests:
-        cpu: 200m
-        memory: 512Mi
+        cpu: 100m
+        memory: 400Mi
       limits:
         cpu: 1000m
-        memory: 2Gi
-
+        memory: 1500Mi
+    
   service:
     type: NodePort
     nodePort: 30090          # http://microk8s-node-ip:30090

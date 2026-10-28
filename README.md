@@ -20,13 +20,25 @@ Deploys `kube-prometheus-stack` to MicroK8s via Gitea Actions + OpenBao.
 Two paths must exist in OpenBao before the workflow runs:
 
 ```bash
-# kubeconfig for MicroK8s
+# kubeconfig for MicroK8s (Already configured)
 bao kv put homelab/microk8s \
   kubeconfig="$(microk8s config)"
 
-# Grafana admin password
-bao kv put homelab/grafana \
-  admin_password="<your-password>"
+# 1. Create the secret (as root/admin)
+bao kv put homelab/grafana admin_password="<your-password>"
+
+# 2. Update the policy (this overwrites it, so include all existing paths)
+bao policy write gitea-runner - <<'EOF'
+path "homelab/data/lxd"      { capabilities = ["read"] }
+path "homelab/data/seaweed"  { capabilities = ["read"] }
+path "homelab/data/ansible"  { capabilities = ["read"] }
+path "homelab/data/microk8s" { capabilities = ["read"] }
+path "homelab/data/grafana"  { capabilities = ["read"] }
+EOF
+
+# 3. Verify
+bao kv get homelab/grafana
+bao policy read gitea-runner
 ```
 
 ### 2. MicroK8s addons
