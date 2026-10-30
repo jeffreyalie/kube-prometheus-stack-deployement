@@ -1,4 +1,48 @@
-# infra/monitoring
+# System Architecture
+
+## System Architecture Kube-promethius-stack
+```
+                                [ USER / ADMIN ]
+                                        |
+                         1. Apply YAML (ServiceMonitors, Rules) <----------------- Via gitea repo
+                                        |
+                                        v
+[--------------------------- KUBERNETES API SERVER ---------------------------]
+                                        |
+                                        | (Watches for changes)
+                                        v
+                         [ PROMETHEUS OPERATOR POD ]
+                         "The Manager / Foreman"
+                                        |
+           -------------------------------------------------------------
+           | (Configures)               | (Configures)                 | (Configures)
+           v                            v                              v
+   [ PROMETHEUS POD ] <---------- [ ALERTMANAGER ]                [ GRAFANA POD ]
+   "The Database"      (Alerts)    "The Notifier"                 "The Visualizer"
+           |                                                           |
+           | 2. PULL / SCRAPE                                          | 3. QUERY
+           | (Every 15-30s)                                            | (On Demand)
+           |                                                           |
+           |                                                           v
+           |                                                     (User Web Browser)
+           |                                                     "lxd-dashboard.local"
+|          | 
+           |
+           |
+           |                           
+           |---> [ NODE EXPORTER ] ----> (Hardware/OS Metrics)
+           |
+           |---> [ YOUR GO APP ] 
+                    |
+                    |-- (:8080/metrics) <--- (Exposed via Go Client Library) (API for Prometheus to pull)
+                    |
+                    |-- [ INTERNAL APP LOGIC ]
+                            |
+                            |-- (LXD SDK) ----> [ LXD SERVER ]
+                            |-- (Vault SDK) ---> [ OPENBAO ]
+```
+
+## Summary
 
 Deploys `kube-prometheus-stack` to MicroK8s via Gitea Actions + OpenBao.
 
@@ -110,51 +154,6 @@ microk8s kubectl delete pvc -n monitoring \
 microk8s kubectl delete pod -n monitoring \
   kube-prometheus-stack-grafana-646b796bf5-kj7j7
 ```
-
-## Kube promethius stack diagram
-
----
-```
-                                [ USER / ADMIN ]
-                                        |
-                         1. Apply YAML (ServiceMonitors, Rules) <----------------- Via gitea repo
-                                        |
-                                        v
-[--------------------------- KUBERNETES API SERVER ---------------------------]
-                                        |
-                                        | (Watches for changes)
-                                        v
-                         [ PROMETHEUS OPERATOR POD ]
-                         "The Manager / Foreman"
-                                        |
-           -------------------------------------------------------------
-           | (Configures)               | (Configures)                 | (Configures)
-           v                            v                              v
-   [ PROMETHEUS POD ] <---------- [ ALERTMANAGER ]                [ GRAFANA POD ]
-   "The Database"      (Alerts)    "The Notifier"                 "The Visualizer"
-           |                                                           |
-           | 2. PULL / SCRAPE                                          | 3. QUERY
-           | (Every 15-30s)                                            | (On Demand)
-           |                                                           |
-           |                                                           v
-           |                                                     (User Web Browser)
-           |                                                     "lxd-dashboard.local"
-|          | 
-           |
-           |
-           |                           
-           |---> [ NODE EXPORTER ] ----> (Hardware/OS Metrics)
-           |
-           |---> [ YOUR GO APP ] 
-                    |
-                    |-- (:8080/metrics) <--- (Exposed via Go Client Library) (API for Prometheus to pull)
-                    |
-                    |-- [ INTERNAL APP LOGIC ]
-                            |
-                            |-- (LXD SDK) ----> [ LXD SERVER ]
-                            |-- (Vault SDK) ---> [ OPENBAO ]
-```
-
 ---
 ## Kube-promethius-grafana stack components
 
