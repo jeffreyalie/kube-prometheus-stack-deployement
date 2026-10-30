@@ -1,5 +1,6 @@
 # System Architecture
-*  System Architecture Kube-promethius-stack
+
+## System Architecture Kube-promethius-stack
 ```
                                 [ USER / ADMIN ]
                                         |
