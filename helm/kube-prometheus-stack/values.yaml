@@ -38,6 +38,13 @@ prometheus:
     podMonitorSelector: {}
     ruleNamespaceSelector: {}
 
+    # NEW: without these, the empty {} selectors above are ignored and
+    # Prometheus only picks up ServiceMonitors labelled release=kube-prometheus-stack
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
     # Persistent storage on microk8s-hostpath
     storageSpec:
       volumeClaimTemplate:
