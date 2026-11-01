@@ -12,8 +12,8 @@ prometheusOperator:
   enabled: true
 
   # MicroK8s specific: the operator needs to watch the right namespace
-  namespaces:
-    releaseNamespace: true
+  # namespaces:
+  #   releaseNamespace: true
 
 # ----------------------------------------------------------------------------
 # PROMETHEUS
