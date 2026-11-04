@@ -37,6 +37,8 @@ prometheus:
     podMonitorNamespaceSelector: {}
     podMonitorSelector: {}
     ruleNamespaceSelector: {}
+    scrapeConfigSelector: {}
+    scrapeConfigNamespaceSelector: {}
 
     # NEW: without these, the empty {} selectors above are ignored and
     # Prometheus only picks up ServiceMonitors labelled release=kube-prometheus-stack
